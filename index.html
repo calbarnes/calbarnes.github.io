@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Be My Valentine 💖</title>
+<style>
+    body {
+        height: 100vh;
+        margin: 0;
+        font-family: 'Comic Sans MS', 'Segoe UI', cursive;
+        background: radial-gradient(circle at top, #ff9a9e, #fad0c4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .card {
+        background: white;
+        padding: 40px 50px;
+        border-radius: 25px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        text-align: center;
+        max-width: 420px;
+        position: relative;
+    }
+
+    h1 {
+        color: #ff4d6d;
+        margin-bottom: 25px;
+        font-size: 2.2rem;
+    }
+
+    .buttons {
+        margin-top: 30px;
+        position: relative;
+        height: 100px; /* enough space for moving No button */
+    }
+
+    button {
+        border: none;
+        border-radius: 50px;
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: absolute;
+    }
+
+    #yesBtn {
+        background: #ff4d6d;
+        color: white;
+        left: 0;
+        top: 0;
+        box-shadow: 0 8px 20px rgba(255,77,109,0.4);
+        position: relative;
+    }
+
+    #noBtn {
+        background: #ccc;
+        color: #333;
+    }
+
+    #yesBtn:hover {
+        transform: scale(1.05);
+    }
+</style>
+</head>
+<body>
+
+<div class="card">
+    <h1 id="question">Will you be my Valentine? 💘</h1>
+    <div class="buttons">
+        <button id="yesBtn">Yes 💖</button>
+        <button id="noBtn">No 🙄</button>
+    </div>
+</div>
+
+<script>
+    const noBtn = document.getElementById('noBtn');
+    const yesBtn = document.getElementById('yesBtn');
+    const question = document.getElementById('question');
+
+    const phrases = [
+        "Are you sure? 🤨",
+        "Really really sure? 😳",
+        "Think again… 🥺",
+        "Last chance! 😭",
+        "Okay now you're just being mean 💔"
+    ];
+
+    let count = 0;
+
+    function moveNoBtn() {
+        const container = noBtn.parentElement;
+        const containerWidth = container.clientWidth;
+        const containerHeight = container.clientHeight;
+
+        // Get current Yes button size and position relative to container
+        const yesRect = yesBtn.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        const yesLeft = yesRect.left - containerRect.left;
+        const yesTop = yesRect.top - containerRect.top;
+        const yesWidth = yesRect.width;
+        const yesHeight = yesRect.height;
+
+        const noWidth = noBtn.offsetWidth;
+        const noHeight = noBtn.offsetHeight;
+
+        let x, y, attempts = 0;
+
+        do {
+            x = Math.random() * (containerWidth - noWidth);
+            y = Math.random() * (containerHeight - noHeight);
+            attempts++;
+            // check overlap with Yes button
+        } while (
+            x + noWidth > yesLeft &&
+            x < yesLeft + yesWidth &&
+            y + noHeight > yesTop &&
+            y < yesTop + yesHeight &&
+            attempts < 100
+        );
+
+        noBtn.style.left = `${x}px`;
+        noBtn.style.top = `${y}px`;
+    }
+
+    noBtn.addEventListener('click', () => {
+        if (count < phrases.length) {
+            question.textContent = phrases[count];
+        }
+
+        // Move the No button safely
+        moveNoBtn();
+
+        // Grow the Yes button
+        const scale = 1 + count * 0.25;
+        yesBtn.style.transform = `scale(${scale})`;
+
+        count++;
+
+        if (count >= 5) {
+            noBtn.style.display = "none";
+            question.textContent = "You have no choice now 😈💘";
+        }
+    });
+
+    yesBtn.addEventListener('click', () => {
+        document.body.innerHTML = `
+            <div style="
+                height:100vh;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                background:linear-gradient(135deg,#ff4d6d,#ffb3c6);
+                font-family:'Comic Sans MS', cursive;
+                color:white;
+                text-align:center;
+            ">
+                <h1 style="font-size:3rem;">
+                    YAY!!! 💕🥰<br>
+                    Best Valentine Ever 💘
+                </h1>
+            </div>
+        `;
+    });
+</script>
+
+</body>
+</html>
