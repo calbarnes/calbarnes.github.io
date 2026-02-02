@@ -2,9 +2,14 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Daily Anatomy Hangman</title>
 
 <style>
+* {
+    box-sizing: border-box;
+}
+
 body {
     background:#020617;
     color:#e5e7eb;
@@ -14,39 +19,61 @@ body {
     align-items:center;
     min-height:100vh;
     margin:0;
-    padding:20px;
+    padding:12px;
 }
 
 .game {
     background:#0f172a;
-    padding:24px;
+    padding:20px;
     border-radius:14px;
-    width:420px;
+    width:100%;
+    max-width:420px;
     text-align:center;
     box-shadow:0 0 30px rgba(0,0,0,.6);
 }
 
+h2 {
+    font-size:clamp(1.2rem, 5vw, 1.5rem);
+    margin:0 0 12px 0;
+}
+
 .word {
-    font-size:30px;
-    letter-spacing:6px;
-    margin:16px 0;
+    font-size:clamp(1.2rem, 6vw, 1.875rem);
+    letter-spacing:clamp(2px, 1.5vw, 6px);
+    margin:12px 0;
+    word-break:break-all;
+    line-height:1.4;
+}
+
+.letters {
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(32px, 1fr));
+    gap:6px;
+    max-width:100%;
+    margin:16px auto;
 }
 
 .letters button {
-    width:32px;
-    height:32px;
-    margin:4px;
+    width:100%;
+    aspect-ratio:1;
+    min-height:36px;
     border:none;
     border-radius:6px;
     background:#1e293b;
     color:#e5e7eb;
     cursor:pointer;
     transition:all 0.2s;
+    font-size:clamp(0.875rem, 3vw, 1rem);
+    touch-action:manipulation;
 }
 
 .letters button:hover:not(:disabled) {
     background:#334155;
-    transform:scale(1.1);
+    transform:scale(1.05);
+}
+
+.letters button:active:not(:disabled) {
+    transform:scale(0.95);
 }
 
 .letters button:disabled {
@@ -56,13 +83,70 @@ body {
 
 .status {
     margin-top:14px;
-    font-size:16px;
+    font-size:clamp(0.875rem, 4vw, 1rem);
     min-height:24px;
     font-weight:bold;
 }
 
 .hangman-container {
-    margin:20px auto;
+    margin:12px auto;
+    max-width:100%;
+    display:flex;
+    justify-content:center;
+}
+
+.hangman-container svg {
+    max-width:100%;
+    height:auto;
+}
+
+.info {
+    font-size:clamp(0.875rem, 3.5vw, 1rem);
+    margin:12px 0;
+}
+
+/* Mobile optimizations */
+@media (max-width: 480px) {
+    .game {
+        padding:16px;
+    }
+    
+    .letters {
+        grid-template-columns:repeat(7, 1fr);
+        gap:4px;
+    }
+    
+    .letters button {
+        min-height:32px;
+        font-size:0.875rem;
+    }
+    
+    .hangman-container svg {
+        width:100%;
+        max-width:280px;
+    }
+}
+
+@media (max-width: 360px) {
+    .letters {
+        grid-template-columns:repeat(6, 1fr);
+    }
+}
+
+/* Landscape mobile */
+@media (max-height: 600px) and (orientation: landscape) {
+    body {
+        align-items:flex-start;
+        padding:8px;
+    }
+    
+    .game {
+        padding:12px;
+    }
+    
+    .hangman-container svg {
+        max-height:180px;
+    }
 }
 </style>
 </head>
@@ -72,7 +156,7 @@ body {
     <h2>🦴 Daily Anatomy Hangman</h2>
 
     <div class="hangman-container">
-        <svg width="220" height="320" viewBox="0 0 220 320">
+        <svg width="220" height="320" viewBox="0 0 220 320" preserveAspectRatio="xMidYMid meet">
             <!-- Gallows -->
             <line x1="20" y1="280" x2="200" y2="280" stroke="#94a3b8" stroke-width="6"/>
             <line x1="60" y1="20" x2="60" y2="280" stroke="#94a3b8" stroke-width="6"/>
@@ -166,7 +250,7 @@ body {
     </div>
 
     <div class="word" id="wordDisplay"></div>
-    <div>Wrong guesses: <span id="wrongCount">0</span>/8</div>
+    <div class="info">Wrong guesses: <span id="wrongCount">0</span>/8</div>
 
     <div class="letters" id="letters"></div>
     <div class="status" id="status"></div>
