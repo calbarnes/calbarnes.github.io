@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Daily Anatomy Hangman</title>
+
+<style>
+body {
+    background:#020617;
+    color:#e5e7eb;
+    font-family:system-ui, sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    margin:0;
+    padding:20px;
+}
+
+.game {
+    background:#0f172a;
+    padding:24px;
+    border-radius:14px;
+    width:420px;
+    text-align:center;
+    box-shadow:0 0 30px rgba(0,0,0,.6);
+}
+
+.word {
+    font-size:30px;
+    letter-spacing:6px;
+    margin:16px 0;
+}
+
+.letters button {
+    width:32px;
+    height:32px;
+    margin:4px;
+    border:none;
+    border-radius:6px;
+    background:#1e293b;
+    color:#e5e7eb;
+    cursor:pointer;
+    transition:all 0.2s;
+}
+
+.letters button:hover:not(:disabled) {
+    background:#334155;
+    transform:scale(1.1);
+}
+
+.letters button:disabled {
+    opacity:.4;
+    cursor:not-allowed;
+}
+
+.status {
+    margin-top:14px;
+    font-size:16px;
+    min-height:24px;
+    font-weight:bold;
+}
+
+.hangman-container {
+    margin:20px auto;
+}
+</style>
+</head>
+
+<body>
+<div class="game">
+    <h2>🦴 Daily Anatomy Hangman</h2>
+
+    <div class="hangman-container">
+        <svg width="220" height="320" viewBox="0 0 220 320">
+            <!-- Gallows -->
+            <line x1="20" y1="280" x2="200" y2="280" stroke="#94a3b8" stroke-width="6"/>
+            <line x1="60" y1="20" x2="60" y2="280" stroke="#94a3b8" stroke-width="6"/>
+            <line x1="60" y1="20" x2="150" y2="20" stroke="#94a3b8" stroke-width="6"/>
+            <line x1="150" y1="20" x2="150" y2="50" stroke="#94a3b8" stroke-width="4"/>
+
+            <!-- Skull with details -->
+            <g id="skull" style="display:none">
+                <circle cx="150" cy="75" r="24" stroke="#e5e7eb" stroke-width="3" fill="#1e293b"/>
+                <!-- Eye sockets -->
+                <circle cx="142" cy="72" r="5" fill="#94a3b8"/>
+                <circle cx="158" cy="72" r="5" fill="#94a3b8"/>
+                <!-- Nasal cavity -->
+                <path d="M 148 78 L 150 85 L 152 78 Z" fill="#94a3b8"/>
+                <!-- Teeth -->
+                <rect x="145" y="88" width="3" height="4" fill="#e5e7eb"/>
+                <rect x="149" y="88" width="3" height="4" fill="#e5e7eb"/>
+                <rect x="153" y="88" width="3" height="4" fill="#e5e7eb"/>
+            </g>
+
+            <!-- Spine -->
+            <g id="spine" style="display:none">
+                <line x1="150" y1="99" x2="150" y2="165" stroke="#e5e7eb" stroke-width="4"/>
+                <circle cx="150" cy="105" r="3" fill="#94a3b8"/>
+                <circle cx="150" cy="115" r="3" fill="#94a3b8"/>
+                <circle cx="150" cy="125" r="3" fill="#94a3b8"/>
+                <circle cx="150" cy="135" r="3" fill="#94a3b8"/>
+                <circle cx="150" cy="145" r="3" fill="#94a3b8"/>
+                <circle cx="150" cy="155" r="3" fill="#94a3b8"/>
+            </g>
+
+            <!-- Ribcage -->
+            <g id="ribcage" style="display:none">
+                <!-- Left ribs -->
+                <path d="M 150 105 Q 135 110 132 120" stroke="#e5e7eb" stroke-width="2.5" fill="none"/>
+                <path d="M 150 115 Q 133 120 130 130" stroke="#e5e7eb" stroke-width="2.5" fill="none"/>
+                <path d="M 150 125 Q 132 128 130 138" stroke="#e5e7eb" stroke-width="2.5" fill="none"/>
+                <path d="M 150 135 Q 135 138 134 145" stroke="#e5e7eb" stroke-width="2.5" fill="none"/>
+                <!-- Right ribs -->
+                <path d="M 150 105 Q 165 110 168 120" stroke="#e5e7eb" stroke-width="2.5" fill="none"/>
+                <path d="M 150 115 Q 167 120 170 130" stroke="#e5e7eb" stroke-width="2.5" fill="none"/>
+                <path d="M 150 125 Q 168 128 170 138" stroke="#e5e7eb" stroke-width="2.5" fill="none"/>
+                <path d="M 150 135 Q 165 138 166 145" stroke="#e5e7eb" stroke-width="2.5" fill="none"/>
+            </g>
+
+            <!-- Pelvis -->
+            <g id="pelvis" style="display:none">
+                <path d="M 135 165 Q 140 158 150 158 Q 160 158 165 165" stroke="#e5e7eb" stroke-width="3" fill="none"/>
+                <line x1="135" y1="165" x2="135" y2="175" stroke="#e5e7eb" stroke-width="3"/>
+                <line x1="165" y1="165" x2="165" y2="175" stroke="#e5e7eb" stroke-width="3"/>
+            </g>
+
+            <!-- Arms with joints -->
+            <g id="armR" style="display:none">
+                <line x1="150" y1="110" x2="165" y2="125" stroke="#e5e7eb" stroke-width="4"/>
+                <line x1="165" y1="125" x2="175" y2="145" stroke="#e5e7eb" stroke-width="3.5"/>
+                <circle cx="165" cy="125" r="4" fill="#94a3b8" stroke="#e5e7eb" stroke-width="1"/>
+                <!-- Hand -->
+                <line x1="175" y1="145" x2="178" y2="152" stroke="#e5e7eb" stroke-width="2"/>
+                <line x1="175" y1="145" x2="175" y2="153" stroke="#e5e7eb" stroke-width="2"/>
+                <line x1="175" y1="145" x2="172" y2="152" stroke="#e5e7eb" stroke-width="2"/>
+            </g>
+
+            <g id="armL" style="display:none">
+                <line x1="150" y1="110" x2="135" y2="125" stroke="#e5e7eb" stroke-width="4"/>
+                <line x1="135" y1="125" x2="125" y2="145" stroke="#e5e7eb" stroke-width="3.5"/>
+                <circle cx="135" cy="125" r="4" fill="#94a3b8" stroke="#e5e7eb" stroke-width="1"/>
+                <!-- Hand -->
+                <line x1="125" y1="145" x2="122" y2="152" stroke="#e5e7eb" stroke-width="2"/>
+                <line x1="125" y1="145" x2="125" y2="153" stroke="#e5e7eb" stroke-width="2"/>
+                <line x1="125" y1="145" x2="128" y2="152" stroke="#e5e7eb" stroke-width="2"/>
+            </g>
+
+            <!-- Legs with joints -->
+            <g id="legR" style="display:none">
+                <line x1="165" y1="175" x2="170" y2="205" stroke="#e5e7eb" stroke-width="4"/>
+                <line x1="170" y1="205" x2="175" y2="235" stroke="#e5e7eb" stroke-width="3.5"/>
+                <circle cx="170" cy="205" r="4" fill="#94a3b8" stroke="#e5e7eb" stroke-width="1"/>
+                <!-- Foot -->
+                <line x1="175" y1="235" x2="185" y2="237" stroke="#e5e7eb" stroke-width="3"/>
+            </g>
+
+            <g id="legL" style="display:none">
+                <line x1="135" y1="175" x2="130" y2="205" stroke="#e5e7eb" stroke-width="4"/>
+                <line x1="130" y1="205" x2="125" y2="235" stroke="#e5e7eb" stroke-width="3.5"/>
+                <circle cx="130" cy="205" r="4" fill="#94a3b8" stroke="#e5e7eb" stroke-width="1"/>
+                <!-- Foot -->
+                <line x1="125" y1="235" x2="115" y2="237" stroke="#e5e7eb" stroke-width="3"/>
+            </g>
+        </svg>
+    </div>
+
+    <div class="word" id="wordDisplay"></div>
+    <div>Wrong guesses: <span id="wrongCount">0</span>/8</div>
+
+    <div class="letters" id="letters"></div>
+    <div class="status" id="status"></div>
+</div>
+
+<script>
+// ===== 365 ANATOMY WORDS =====
+const words = [
+// Bones (100+)
+"femur","tibia","fibula","patella","humerus","radius","ulna","scapula",
+"clavicle","sternum","cranium","mandible","maxilla","zygomatic","temporal",
+"parietal","occipital","frontal","ethmoid","sphenoid","sacrum","coccyx",
+"ilium","ischium","pubis","calcaneus","talus","navicular","cuboid",
+"metatarsal","phalange","carpal","metacarpal","tarsal","cervical","thoracic",
+"lumbar","vertebra","atlas","axis","hyoid","malleus","incus","stapes",
+"vomer","palatine","lacrimal","nasal","rib","costa","xiphoid","manubrium",
+"acromion","coracoid","glenoid","olecranon","styloid","trochanter","condyle",
+"epicondyle","tubercle","tuberosity","fossa","foramen","sinus","canal",
+"meatus","fissure","sulcus","spine","process","ramus","head","neck",
+"shaft","body","arch","lamina","pedicle","facet","articular","cortical",
+"trabecular","compact","spongy","periosteum","endosteum","diaphysis","epiphysis",
+"metaphysis","ossification","osteoblast","osteoclast","osteocyte","callus",
+
+// Muscles (80+)
+"biceps","triceps","deltoid","pectoralis","latissimus","trapezius",
+"quadriceps","hamstring","gastrocnemius","soleus","achilles","gluteus",
+"rectus","oblique","transversus","serratus","rhomboid","levator","sternocleidomastoid",
+"masseter","temporalis","buccinator","frontalis","orbicularis","zygomaticus",
+"platysma","sartorius","gracilis","adductor","abductor","tensor","iliopsoas",
+"piriformis","gemellus","obturator","pectineus","vastus","semitendinosus",
+"semimembranosus","tibialis","peroneus","extensor","flexor","pronator","supinator",
+"brachialis","coracobrachialis","anconeus","palmaris","lumbrical","interosseous",
+"thenar","hypothenar","digastric","mylohyoid","geniohyoid","stylohyoid",
+"omohyoid","thyrohyoid","diaphragm","intercostal","scalene","splenius",
+"erector","multifidus","rotatores","spinalis","longissimus","iliocostalis",
+"psoas","quadratus","transverse","sphincter","detrusor","cremaster",
+
+// Organs & Systems (60+)
+"heart","lung","liver","kidney","spleen","pancreas","stomach","intestine",
+"colon","rectum","appendix","gallbladder","bladder","uterus","ovary","testis",
+"prostate","thyroid","thymus","adrenal","pituitary","pineal","hypothalamus",
+"cerebrum","cerebellum","brainstem","medulla","pons","thalamus","amygdala",
+"hippocampus","cortex","basal","ventricle","atrium","valve","septum","aorta",
+"artery","vein","capillary","trachea","bronchus","alveoli","pleura","esophagus",
+"duodenum","jejunum","ileum","cecum","ascending","transverse","descending",
+"sigmoid","anus","nephron","glomerulus","tubule","ureter","urethra",
+
+// Tissues & Cells (40+)
+"epithelium","connective","muscle","nervous","cartilage","ligament","tendon",
+"fascia","adipose","fibrous","elastic","reticular","collagen","keratin",
+"melanin","hemoglobin","plasma","serum","lymph","synovial","mucous","serous",
+"neuron","axon","dendrite","synapse","myelin","soma","glia","astrocyte",
+"oligodendrocyte","microglia","ependymal","schwann","erythrocyte","leukocyte",
+"lymphocyte","monocyte","neutrophil","eosinophil","basophil","platelet",
+
+// Miscellaneous (85+)
+"meniscus","bursa","joint","suture","symphysis","gomphosis","synarthrosis",
+"amphiarthrosis","diarthrosis","hinge","pivot","ball","saddle","condyloid",
+"plane","synovial","articular","capsule","membrane","integument","dermis",
+"epidermis","subcutaneous","follicle","sebaceous","sudoriferous","papilla",
+"stratum","corneum","lucidum","granulosum","spinosum","basale","papillary",
+"reticular","meissner","pacinian","ruffini","merkel","receptor","nociceptor",
+"mechanoreceptor","thermoreceptor","chemoreceptor","photoreceptor","proprioceptor",
+"baroreceptor","osmoreceptor","nerve","plexus","ganglion","tract","commissure",
+"decussation","chiasm","reflex","afferent","efferent","somatic","autonomic",
+"sympathetic","parasympathetic","cranial","spinal","radial","median","ulnar",
+"sciatic","femoral","tibial","peroneal","vagus","phrenic","optic","olfactory",
+"oculomotor","trochlear","trigeminal","abducens","facial","vestibulocochlear",
+"glossopharyngeal","accessory","hypoglossal","cervical","brachial","lumbar",
+"sacral","coccygeal","dermatome","myotome","sclerotome"
+];
+
+// ===== DAILY WORD =====
+function getDayOfYear() {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    return Math.floor((now - start) / 86400000) - 1;
+}
+
+const word = words[getDayOfYear() % words.length];
+let guessed = [];
+let wrong = 0;
+const maxWrong = 8;
+
+// ===== HANGMAN PART ORDER (8 parts now) =====
+const hangmanParts = [
+    "skull",
+    "spine",
+    "ribcage",
+    "pelvis",
+    "armR",
+    "armL",
+    "legR",
+    "legL"
+];
+
+// ===== UI =====
+const wordDisplay = document.getElementById("wordDisplay");
+const wrongCount = document.getElementById("wrongCount");
+const status = document.getElementById("status");
+const lettersDiv = document.getElementById("letters");
+
+function updateWord() {
+    wordDisplay.textContent = word
+        .split("")
+        .map(l => guessed.includes(l) ? l : "_")
+        .join(" ");
+}
+
+function updateHangman() {
+    if (wrong > 0 && wrong <= hangmanParts.length) {
+        document.getElementById(hangmanParts[wrong - 1]).style.display = "block";
+    }
+}
+
+function guessLetter(letter, btn) {
+    btn.disabled = true;
+
+    if (word.includes(letter)) {
+        guessed.push(letter);
+        updateWord();
+
+        if (!wordDisplay.textContent.includes("_")) {
+            status.textContent = "🎉 You saved the skeleton!";
+            status.style.color = "#10b981";
+            document.querySelectorAll(".letters button")
+                .forEach(b => b.disabled = true);
+        }
+    } else {
+        wrong++;
+        wrongCount.textContent = wrong;
+        updateHangman();
+
+        if (wrong === maxWrong) {
+            status.textContent = `💀 Game Over! The word was "${word}".`;
+            status.style.color = "#ef4444";
+            document.querySelectorAll(".letters button")
+                .forEach(b => b.disabled = true);
+        }
+    }
+}
+
+// ===== LETTER BUTTONS =====
+"abcdefghijklmnopqrstuvwxyz".split("").forEach(l => {
+    const btn = document.createElement("button");
+    btn.textContent = l;
+    btn.onclick = () => guessLetter(l, btn);
+    lettersDiv.appendChild(btn);
+});
+
+updateWord();
+</script>
+</body>
+</html>
